@@ -4,18 +4,13 @@
 // #include <stdio.h>
 // #include <stdlib.h>
 
-t_list	*ft_list_at(t_list *begin_list, int x)
+t_list	*ft_list_at(t_list *begin_list, unsigned int nbr)
 {
-	int		index;
-	t_list	*list;
-
-	index = 0;
-	list = begin_list;
-	while (list && index < x)
-		list = list->next, index++;
-	if (index == x)
-		return (list);
-	return (0);
+	if (nbr == 0)
+		return (begin_list);
+	if (!begin_list->next)
+		return (0);
+	return (ft_list_at(begin_list->next, nbr - 1));
 }
 
 void	ft_reverse_fun(t_list *begin_list)
@@ -33,13 +28,14 @@ void	ft_reverse_fun(t_list *begin_list)
 	while (curr)
 		curr = curr->next, size++;
 	index = 0;
+	curr = begin_list;
 	while (index < (size / 2))
 	{
-		curr = ft_list_at(begin_list, index);
-		oppo = ft_list_at(begin_list, size - 1 - index);
+		oppo = ft_list_at(curr, size - 1 - (2 * index));
 		data = curr->data;
 		curr->data = oppo->data;
 		oppo->data = data;
+		curr = curr->next;
 		index++;
 	}
 }
@@ -74,8 +70,10 @@ void	ft_reverse_fun(t_list *begin_list)
 // 	t_list	*list;
 // 	list = ft_create_elem("works");
 // 	list->next = ft_create_elem("it");
-// 	list->next->next = ft_create_elem("world");
-// 	list->next->next->next = ft_create_elem("hello");
+// 	list->next->next = ft_create_elem("...");
+// 	list->next->next->next = ft_create_elem(";)");
+// 	list->next->next->next->next = ft_create_elem("world");
+// 	list->next->next->next->next->next = ft_create_elem("hello");
 // 	ft_reverse_fun(list);
 // 	ft_list_foreach(list, ft_print);
 // }

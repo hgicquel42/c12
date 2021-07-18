@@ -9,7 +9,6 @@ void	ft_list_clear(t_list *begin_list, void (*free_fct)(void *))
 	if (!begin_list)
 		return ;
 	free_fct(begin_list->data);
-	begin_list->data = 0;
 	ft_list_clear(begin_list->next, free_fct);
 	begin_list->next = 0;
 	free(begin_list);

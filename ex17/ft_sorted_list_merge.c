@@ -1,24 +1,68 @@
 #include "ft_list.h"
+#include <stdlib.h>
 
 // //REMOVE
 // #include <stdio.h>
-// #include <stdlib.h>
 
-void	ft_sorted_list_insert(
-	t_list **begin_list,
-	t_list	*elem,
-	int (*cmp)()
-)
+void	ft_list_merge(t_list **begin_list1, t_list *begin_list2)
 {
-	if (!begin_list || !elem)
+	if (!begin_list1)
 		return ;
-	if (*begin_list && cmp(elem->data, (*begin_list)->data) > 0)
-		return (ft_sorted_list_insert(&((*begin_list)->next), elem->data, cmp));
-	if (*begin_list)
-		elem->next = *begin_list;
+	if (!*begin_list1)
+		*begin_list1 = begin_list2;
 	else
-		elem->next = 0;
-	*begin_list = elem;
+		ft_list_merge(&((*begin_list1)->next), begin_list2);
+}
+
+void	ft_list_split(t_list *head, t_list **front, t_list **back)
+{
+	t_list	*slow;
+	t_list	*fast;
+
+	slow = head;
+	fast = head->next;
+	while (fast)
+	{
+		fast = fast->next;
+		if (!fast)
+			break ;
+		slow = slow->next;
+		fast = fast->next;
+	}
+	*front = head;
+	*back = slow->next;
+	slow->next = 0;
+}
+
+t_list	*ft_list_merge_sort(t_list *front, t_list *back, int (*cmp)())
+{
+	if (!front)
+		return (back);
+	if (!back)
+		return (front);
+	if (cmp(front->data, back->data) <= 0)
+	{
+		front->next = ft_list_merge_sort(front->next, back, cmp);
+		return (front);
+	}
+	else
+	{
+		back->next = ft_list_merge_sort(front, back->next, cmp);
+		return (back);
+	}
+}
+
+void	ft_list_sort(t_list **begin_list, int (*cmp)())
+{
+	t_list	*front;
+	t_list	*back;
+
+	if (!begin_list || !*begin_list || !(*begin_list)->next)
+		return ;
+	ft_list_split(*begin_list, &front, &back);
+	ft_list_sort(&front, cmp);
+	ft_list_sort(&back, cmp);
+	*begin_list = ft_list_merge_sort(front, back, cmp);
 }
 
 void	ft_sorted_list_merge(
@@ -27,10 +71,8 @@ void	ft_sorted_list_merge(
 	int (*cmp)()
 )
 {
-	if (!begin_list2)
-		return ;
-	ft_sorted_list_merge(begin_list, begin_list2->next, cmp);
-	ft_sorted_list_insert(begin_list, begin_list2, cmp);
+	ft_list_merge(begin_list, begin_list2);
+	ft_list_sort(begin_list, cmp);
 }
 
 // void	ft_list_foreach(t_list *begin_list, void (*f)(void *))
@@ -74,8 +116,8 @@ void	ft_sorted_list_merge(
 // {
 // 	t_list	*list1 = ft_create_elem("aaa");
 // 	t_list	*list2 = ft_create_elem("ddd");
-// 	t_list	*list3 = ft_create_elem("ccc");
-// 	t_list	*list4 = ft_create_elem("eee");
+// 	t_list	*list3 = ft_create_elem("eee");
+// 	t_list	*list4 = ft_create_elem("ccc");
 // 	t_list	**begin_list = malloc(sizeof(t_list *));
 // 	*begin_list = list1;
 // 	list1->next = list2;
